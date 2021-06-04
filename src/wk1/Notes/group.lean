@@ -27,6 +27,7 @@ end
 theorem mul_right_surjective' (a : G) : function.surjective (λ x, x * a) := 
   λ x, ⟨x * a⁻¹, inv_mul_cancel_right x a⟩
 
+
 /-
 begin
   intros x,
