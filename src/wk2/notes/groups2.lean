@@ -26,14 +26,20 @@ begin
   { refl},
 end
 
+example : 1 + 1 = 2 := by linarith -- by norm_num
+
 end multiplicity
 
 open nat
 
+#check sq_mul_squarefree_of_pos
+
 lemma sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
   ∃ a b : ℕ, (b + 1) ^ 2 * (a + 1) = n ∧ squarefree (a + 1) :=
 begin
-  sorry
+  obtain ⟨a₁, b₁, ha₁, hb₁, hab₁, ha₂⟩ := sq_mul_squarefree_of_pos h,
+  refine ⟨a₁.pred, b₁.pred, _, _⟩;
+  simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁], 
 end
 
 end squarefree
@@ -43,16 +49,35 @@ section finite_groups
 # Finite Groups
 -/
 
-variables {G H : Type*} [group G] [add_group H]
+variables {G : Type*} [group G]
 
 
 -- This one is a beast
 
+open subgroup
+
+#check submonoid.fg_iff 
+#check le_antisymm
+
 /-- A subgroup is finitely generated if and only if it is finitely generated as a submonoid. -/
 lemma fg_iff_submonoid_fg' (P : subgroup G) : P.fg ↔ P.to_submonoid.fg :=
 begin
-  sorry
+  split,
+  { rintro ⟨S, rfl⟩,
+    rw submonoid.fg_iff,
+    refine ⟨S ∪ S⁻¹, (subgroup.closure_to_submonoid _).symm, S.finite_to_set.union S.finite_to_set.inv⟩,
+  },
+  { rintro ⟨S, hS⟩,
+    refine ⟨S, le_antisymm _ _⟩,
+    { rw [closure_le, ← coe_to_submonoid, ← hS],
+      exact submonoid.subset_closure,
+    },
+    { rw [← subgroup.to_submonoid_le, ← hS, submonoid.closure_le],
+      exact subgroup.subset_closure,
+    }
+  },
 end
+
 
 /-!
 # NB!
