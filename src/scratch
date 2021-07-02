@@ -1,0 +1,27 @@
+  refine forall_congr (λ a, _),
+  rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr],
+  swap, { refl },
+  convert enat.add_one_le_iff_lt (enat.coe_ne_top _),
+  norm_cast,
+
+  obtain ⟨a₁, b₁, ha₁, hb₁, hab₁, hab₂⟩ := sq_mul_squarefree_of_pos h,
+  refine ⟨a₁.pred, b₁.pred, _, _⟩;
+  simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁],
+
+-- exercise
+  cases n,
+  { exact ⟨1, 0, (by simp), squarefree_one⟩ },
+  { obtain ⟨a, b, -, -, h₁, h₂⟩ := sq_mul_squarefree_of_pos (succ_pos n),
+    exact ⟨a, b, h₁, h₂⟩ },
+
+  split,
+  { rintro ⟨S, rfl⟩,
+    rw submonoid.fg_iff,
+    refine ⟨S ∪ S⁻¹, _, S.finite_to_set.union S.finite_to_set.inv⟩,
+    exact (subgroup.closure_to_submonoid _).symm },
+  { rintro ⟨S, hS⟩,
+    refine ⟨S, le_antisymm _ _⟩,
+    { rw [subgroup.closure_le, ←subgroup.coe_to_submonoid, ←hS],
+      exact submonoid.subset_closure },
+    { rw [← subgroup.to_submonoid_le, ← hS, submonoid.closure_le],
+      exact subgroup.subset_closure } }
